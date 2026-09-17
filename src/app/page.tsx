@@ -43,21 +43,8 @@ export default function HomePage() {
             </div>
 
             {/* Main Hero Header */}
-            <div className="text-center max-w-4xl mx-auto mb-8 sm:mb-12">
-              <div className="flex justify-center mb-4">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src="/logo.png"
-                  alt="วังหมีกระทิง RUN LEARN LAND Logo"
-                  className="w-24 h-24 sm:w-32 sm:h-32 object-contain drop-shadow-xs transition-transform hover:scale-105"
-                />
-              </div>
-              <span className="text-xs sm:text-sm font-semibold tracking-widest text-accent-orange uppercase block mb-2">
-                Wangmee Bull & Nature Conservation Charity Run
-              </span>
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-ink-dark leading-[1.15] mb-4">
-                วังหมีกระทิง <span className="text-accent-orange">RUN LEARN LAND</span>
-              </h1>
+            <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-10">
+              <h1 className="sr-only">วังหมีกระทิง RUN LEARN LAND</h1>
               <p className="text-base sm:text-xl text-muted-green leading-relaxed max-w-2xl mx-auto">
                 เดิน–วิ่งสัมผัสผืนป่าดงพญาเย็น เรียนรู้วิถีชีวิตกระทิงวังน้ำเขียว และร่วมระดมทุนสนับสนุนอุปกรณ์ผู้พิทักษ์ป่าชุมชน
               </p>
