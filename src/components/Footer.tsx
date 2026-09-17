@@ -39,7 +39,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2.5 text-sm text-soft-olive/80">
               <li className="flex items-start gap-2.5">
                 <IconCalendarEvent size={18} className="text-olive-highlight shrink-0 mt-0.5" />
-                <span>วันอาทิตย์ที่ 8 พฤศจิกายน 2026 (05:00 - 11:00 น.)</span>
+                <span>19–22 กุมภาพันธ์ 2570 (Family Nature Trail Festival)</span>
               </li>
               <li className="flex items-start gap-2.5">
                 <IconMapPin size={18} className="text-olive-highlight shrink-0 mt-0.5" />

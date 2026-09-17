@@ -59,9 +59,10 @@ export default function HomePage() {
             <div className="max-w-5xl mx-auto mb-10 sm:mb-14">
               <ImageSlot
                 ratio="16:9"
-                label="ภาพพื้นที่และทิวทัศน์ผืนป่าวังหมี วังน้ำเขียว"
-                sublabel="สัดส่วน 16:9 • ภาพแนวป่าเขา ทุ่งหญ้ากระทิง และสายหมอกยามเช้า"
-                className="shadow-xs"
+                source="/cover.jpg"
+                label="โปสเตอร์หลักโครงการ วังหมีกระทิง RUN LEARN LAND"
+                sublabel="Family Nature Trail Festival"
+                className="shadow-sm overflow-hidden border-2 border-border-subtle"
               />
             </div>
 
@@ -73,8 +74,8 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="text-xs font-semibold text-muted-green uppercase tracking-wider">วันจัดกิจกรรม</h3>
-                  <p className="text-sm font-bold text-ink-dark mt-0.5">8 พฤศจิกายน 2026</p>
-                  <p className="text-xs text-muted-green mt-0.5">ปล่อยตัวเริ่ม 05:30 น.</p>
+                  <p className="text-sm font-bold text-ink-dark mt-0.5">19–22 กุมภาพันธ์ 2570</p>
+                  <p className="text-xs text-muted-green mt-0.5">Family Nature Trail Festival</p>
                 </div>
               </div>
 

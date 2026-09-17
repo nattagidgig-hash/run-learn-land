@@ -41,7 +41,7 @@ export const ImageSlot: React.FC<ImageSlotProps> = ({
     }
   };
 
-  const isRealImage = source && source !== "placeholder" && source.startsWith("http");
+  const isRealImage = source && source !== "placeholder" && (source.startsWith("http") || source.startsWith("/"));
 
   return (
     <div
