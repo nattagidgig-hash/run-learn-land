@@ -15,9 +15,12 @@ export const Footer: React.FC = () => {
           {/* Brand & Mission */}
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-[14px] bg-soft-olive text-ink-dark flex items-center justify-center font-bold text-lg">
-                RLL
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logo.png"
+                alt="วังหมีกระทิง RUN LEARN LAND"
+                className="w-12 h-12 object-contain bg-canvas-cream rounded-[14px] p-1 shadow-xs"
+              />
               <span className="text-lg font-bold tracking-tight text-white">
                 วังหมีกระทิง RUN LEARN LAND
               </span>
