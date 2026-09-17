@@ -31,6 +31,7 @@ export interface RaceCategory {
   perks: string[];
   description: string;
   imageLabel: string;
+  imageUrl?: string;
 }
 
 export interface ParticipantInfo {

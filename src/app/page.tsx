@@ -171,9 +171,21 @@ export default function HomePage() {
                         : "border-border-subtle hover:border-muted-green/60"
                     }`}
                   >
+                    {/* Package Artwork Image */}
+                    {cat.imageUrl && (
+                      <div className="mb-4 overflow-hidden rounded-[18px] border border-border-subtle aspect-square relative bg-canvas-cream">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={cat.imageUrl}
+                          alt={cat.name}
+                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                        />
+                      </div>
+                    )}
+
                     {/* Top Tag & Price */}
                     <div>
-                      <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center justify-between mb-3">
                         <span className="px-3 py-1 rounded-full text-xs font-semibold bg-soft-olive text-ink-dark border border-border-subtle">
                           {cat.distance}
                         </span>
@@ -320,19 +332,22 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <ImageSlot
-                ratio="4:5"
-                label="ทุ่งหญ้าและจุดชมกระทิงป่า"
-                sublabel="สัดส่วน 4:5 • กิจกรรมศึกษาธรรมชาติ"
+                ratio="1:1"
+                source="/packages/nature-walk.jpg"
+                label="เนเจอร์วอล์ค 3 กม. เดินสำรวจธรรมชาติ"
+                sublabel="ระยะ 3 กม. • สัตว์นำทาง ผึ้งและนกทูแคนน่ารัก"
               />
               <ImageSlot
-                ratio="4:5"
-                label="จุดพักและกิจกรรมครอบครัว"
-                sublabel="สัดส่วน 4:5 • ฐานการเรียนรู้เชิงนิเวศ"
+                ratio="1:1"
+                source="/packages/family-run.jpg"
+                label="แฟมิลี่รัน 4.2 กม. วิ่งสนุกทั้งครอบครัว"
+                sublabel="ระยะ 4.2 กม. • หมีน้อยนักเดินทางและครอบครัว"
               />
               <ImageSlot
-                ratio="4:5"
-                label="สันเขาผืนป่าดงพญาเย็น"
-                sublabel="สัดส่วน 4:5 • จุดชมวิวมินิเทรล 12 กม."
+                ratio="1:1"
+                source="/packages/mini-trail.jpg"
+                label="มินิเทรล 14 กม. ท้าทายเส้นทางธรรมชาติ"
+                sublabel="ระยะ 14 กม. • กระทิงป่านักวิ่งเทรลขาลุย"
               />
             </div>
           </div>

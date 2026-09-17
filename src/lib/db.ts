@@ -23,7 +23,8 @@ export const INITIAL_CATEGORIES: RaceCategory[] = [
       'คู่มือศึกษาธรรมชาติผืนป่าวังหมี'
     ],
     description: 'เส้นทางเดินเท้าชมธรรมชาติเลียบแนวป่าชุมชนวังหมี สัมผัสความอุดมสมบูรณ์และระบบนิเวศ เรียนรู้จุดหากินของกระทิงป่าพร้อมไกด์ท้องถิ่น',
-    imageLabel: 'เส้นทางธรรมชาติเลียบผืนป่าวังหมี 3 กม.'
+    imageLabel: 'เนเจอร์วอล์ค 3 กม. เดินสำรวจธรรมชาติ',
+    imageUrl: '/packages/nature-walk.jpg'
   },
   {
     id: 'family-run',
@@ -48,14 +49,15 @@ export const INITIAL_CATEGORIES: RaceCategory[] = [
       'ประกันอุบัติเหตุตลอดงาน'
     ],
     description: 'เส้นทางวิ่งเพื่อการเรียนรู้สำหรับทุกคนในครอบครัว ลัดเลาะผ่านสวนเกษตรอินทรีย์และทุ่งหญ้าธรรมชาติ มีฐานกิจกรรมเชิงนิเวศตลอดเส้นทาง',
-    imageLabel: 'ทิวทัศน์และฐานการเรียนรู้ Family Run 4.2 กม.'
+    imageLabel: 'แฟมิลี่รัน 4.2 กม. วิ่งสนุกทั้งครอบครัว',
+    imageUrl: '/packages/family-run.jpg'
   },
   {
     id: 'mini-trail',
     slug: 'mini-trail',
     name: 'Mini Trail',
-    distance: '12 กม.',
-    distanceKm: 12,
+    distance: '14 กม.',
+    distanceKm: 14,
     elevation: '+320m',
     price: 850,
     quota: 300,
@@ -73,7 +75,8 @@ export const INITIAL_CATEGORIES: RaceCategory[] = [
       'E-Certificate รับรองผลการแข่งขัน'
     ],
     description: 'เส้นทางเทรลแท้ผ่านสันเขา ป่าไผ่ และแนวเขตห้ามล่าสัตว์ป่า สัมผัสอากาศบริสุทธิ์และวิวมุมสูง 360 องศาของเทือกเขาดงพญาเย็น',
-    imageLabel: 'ทางลาดชันและวิวเทือกเขามินิเทรล 12 กม.'
+    imageLabel: 'มินิเทรล 14 กม. ท้าทายเส้นทางธรรมชาติ',
+    imageUrl: '/packages/mini-trail.jpg'
   }
 ];
 

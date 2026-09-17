@@ -45,10 +45,11 @@ export default function ActivitiesPage() {
               {/* Image / Visual Column (5 cols) */}
               <div className="lg:col-span-5 space-y-3">
                 <ImageSlot
-                  ratio="4:5"
+                  ratio="1:1"
+                  source={cat.imageUrl}
                   label={cat.imageLabel}
-                  sublabel={`สัดส่วน 4:5 • กิจกรรม ${cat.name}`}
-                  className="rounded-[20px]"
+                  sublabel={`สัดส่วน 1:1 • โปสเตอร์ทางการ ${cat.name}`}
+                  className="rounded-[20px] shadow-xs"
                 />
               </div>
 
