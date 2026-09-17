@@ -1,0 +1,16 @@
+{
+  "name": "วังหมีกระทิง RUN LEARN LAND",
+  "short_name": "RUN LEARN LAND",
+  "description": "แพลตฟอร์มรับสมัครงานวิ่งการกุศล วังหมีกระทิง",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7F3EA",
+  "theme_color": "#14251B",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

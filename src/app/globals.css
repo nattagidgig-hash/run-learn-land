@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas-cream: #F7F3EA;
+  --color-surface-white: #FFFFFF;
+  --color-ink-dark: #14251B;
+  --color-muted-green: #667161;
+  --color-accent-orange: #D96D2B;
+  --color-olive-highlight: #B5BE62;
+  --color-soft-olive: #EEF0D9;
+  --color-border-subtle: #D9D9CF;
+  --color-status-success: #3E7C4A;
+  --color-status-warning: #B8892E;
+  --color-status-error: #B74D3F;
+
+  --font-thai: var(--font-prompt), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+:root {
+  --background: #F7F3EA;
+  --foreground: #14251B;
+}
+
+body {
+  background-color: #F7F3EA;
+  color: #14251B;
+  font-family: var(--font-prompt), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F7F3EA;
+}
+::-webkit-scrollbar-thumb {
+  background: #D9D9CF;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #667161;
+}
+
+/* Safe areas */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 16px);
+}
