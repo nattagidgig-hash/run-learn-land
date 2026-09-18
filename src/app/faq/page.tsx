@@ -58,6 +58,8 @@ export default function FAQPage() {
               >
                 <button
                   type="button"
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-panel-${i}`}
                   onClick={() => setOpenIdx(isOpen ? null : i)}
                   className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-ink-dark hover:bg-soft-olive/20"
                 >
@@ -69,7 +71,7 @@ export default function FAQPage() {
                   )}
                 </button>
                 {isOpen && (
-                  <div className="px-5 pb-5 sm:px-6 sm:pb-6 text-xs sm:text-sm text-muted-green leading-relaxed border-t border-border-subtle/50 pt-3">
+                  <div id={`faq-panel-${i}`} className="px-5 pb-5 sm:px-6 sm:pb-6 text-xs sm:text-sm text-muted-green leading-relaxed border-t border-border-subtle/50 pt-3">
                     {faq.a}
                   </div>
                 )}

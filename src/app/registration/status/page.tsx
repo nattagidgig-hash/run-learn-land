@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { db } from "@/lib/db";
@@ -32,19 +33,6 @@ function StatusContent() {
   const [order, setOrder] = useState<RegistrationOrder | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  useEffect(() => {
-    if (codeParam) {
-      handleSearch(codeParam);
-    } else {
-      // Default to first seed record for demo
-      const first = db.getRegistrations()[0];
-      if (first) {
-        setOrder(first);
-        setSearchQuery(first.registrationCode);
-      }
-    }
-  }, [codeParam]);
-
   const handleSearch = (queryToSearch?: string) => {
     const q = queryToSearch !== undefined ? queryToSearch : searchQuery;
     setHasSearched(true);
@@ -55,6 +43,11 @@ function StatusContent() {
     const found = db.getRegistration(q.trim());
     setOrder(found || null);
   };
+
+  useEffect(() => {
+    if (codeParam) handleSearch(codeParam);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codeParam]);
 
   // Status timeline steps
   const timelineStages = [
@@ -274,15 +267,15 @@ function StatusContent() {
                 <div className="rounded-[24px] bg-surface-white border border-border-subtle p-6 shadow-xs space-y-4 text-xs">
                   <h3 className="text-sm font-bold text-ink-dark uppercase tracking-wider pb-2 border-b border-border-subtle flex items-center justify-between">
                     <span>กำหนดการและข้อแนะนำ</span>
-                    <a href="/schedule" className="text-accent-orange hover:underline font-medium">
+                    <Link href="/schedule" className="text-accent-orange hover:underline font-medium">
                       ดูกำหนดการเต็ม
-                    </a>
+                    </Link>
                   </h3>
 
                   <div className="space-y-2 text-ink-dark">
                     <div className="flex items-start gap-2">
                       <IconCalendarEvent size={16} className="text-olive-highlight shrink-0 mt-0.5" />
-                      <span><strong>วันจัดงาน:</strong> วันอาทิตย์ที่ 8 พฤศจิกายน 2026 (เปิดจุดเช็กอิน 05:00 น.)</span>
+                      <span><strong>วันจัดงาน:</strong> 19–22 กุมภาพันธ์ 2570 (เปิดจุดเช็กอิน 05:00 น.)</span>
                     </div>
                     <div className="flex items-start gap-2">
                       <IconMapPin size={16} className="text-olive-highlight shrink-0 mt-0.5" />
@@ -305,12 +298,12 @@ function StatusContent() {
               <p className="text-xs text-muted-green">
                 โปรดตรวจสอบความถูกต้องของเลขสมัครหรือเบอร์โทรศัพท์ หากเพิ่งสมัครเสร็จระบบอาจใช้เวลาประมวลผลสักครู่
               </p>
-              <a
+              <Link
                 href="/register"
                 className="inline-block mt-2 px-5 py-2.5 rounded-[12px] bg-ink-dark text-white text-xs font-semibold"
               >
                 สมัครเข้าร่วมกิจกรรมใหม่
-              </a>
+              </Link>
             </div>
           )
         )}

@@ -39,7 +39,7 @@ export default function RulesPage() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
               <div className="p-4 rounded-[18px] bg-canvas-cream border border-border-subtle space-y-2">
-                <span className="font-bold text-ink-dark block">สำหรับระยะ Mini Trail 12 กม. (บังคับ)</span>
+                <span className="font-bold text-ink-dark block">สำหรับระยะ Mini Trail 14 กม. (บังคับ)</span>
                 <ul className="space-y-1.5 text-muted-green">
                   <li>• นกหวีดฉุกเฉินประจำตัว (ตรวจก่อนเข้าสตาร์ท)</li>
                   <li>• กระติกน้ำหรือเป้น้ำพกพา ความจุอย่างน้อย 500 ml</li>

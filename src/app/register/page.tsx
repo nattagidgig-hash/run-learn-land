@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ImageSlot } from "@/components/ui/ImageSlot";
@@ -36,6 +37,9 @@ import {
 } from "@tabler/icons-react";
 import { QRCodeSVG } from "qrcode.react";
 import confetti from "canvas-confetti";
+
+const SUCCESS_KEY = "rll_success_code";
+const isPhone = (v: string) => /^0\d{8,9}$/.test(v.replace(/[\s-]/g, ""));
 
 const SHIRT_SIZES: { size: ShirtSize; chest: string; length: string }[] = [
   { size: "XS", chest: '34"', length: '25"' },
@@ -120,8 +124,7 @@ function RegisterContent() {
   });
 
   // Payment
-  const [paymentMethod, setPaymentMethod] = useState<"promptpay" | "credit_card">("promptpay");
-  const [slipUploaded, setSlipUploaded] = useState(false);
+  const [slipName, setSlipName] = useState("");
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Success Result
@@ -133,8 +136,15 @@ function RegisterContent() {
   // Error validation states
   const [validationError, setValidationError] = useState<string>("");
 
-  // Load draft on mount
+  // Restore success screen after refresh, else load draft
   useEffect(() => {
+    const code = sessionStorage.getItem(SUCCESS_KEY);
+    const order = code && db.getRegistration(code);
+    if (order) {
+      setSuccessOrder(order);
+      setStep(7);
+      return;
+    }
     const draft = db.getDraft();
     if (draft) {
       if (draft.selectedCategoryId) setSelectedCategoryId(draft.selectedCategoryId as string);
@@ -170,10 +180,6 @@ function RegisterContent() {
 
   // Participant Handlers
   const addParticipant = () => {
-    if (participants.length >= 6) {
-      alert("รับสมัครสูงสุด 6 คนต่อหนึ่งรายการ");
-      return;
-    }
     const newP: ParticipantInfo = {
       id: `p-${Date.now()}`,
       fullNameTh: "",
@@ -228,8 +234,16 @@ function RegisterContent() {
           setValidationError(`กรุณาระบุวันเดือนปีเกิด ของผู้สมัครคนที่ ${i + 1}`);
           return false;
         }
-        if (!p.phone || p.phone.length < 9) {
-          setValidationError(`กรุณากรอกเบอร์โทรศัพท์ที่ถูกต้อง ของผู้สมัครคนที่ ${i + 1}`);
+        if (!isPhone(p.phone)) {
+          setValidationError(`กรุณากรอกเบอร์โทรศัพท์ที่ถูกต้อง (ตัวเลข 9–10 หลัก ขึ้นต้นด้วย 0) ของผู้สมัครคนที่ ${i + 1}`);
+          return false;
+        }
+        if (p.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(p.email)) {
+          setValidationError(`รูปแบบอีเมลไม่ถูกต้อง ของผู้สมัครคนที่ ${i + 1}`);
+          return false;
+        }
+        if (p.idCardLast4 && !/^\d{4}$/.test(p.idCardLast4)) {
+          setValidationError(`เลขท้ายบัตรประชาชนต้องเป็นตัวเลข 4 หลัก ของผู้สมัครคนที่ ${i + 1}`);
           return false;
         }
       }
@@ -245,8 +259,8 @@ function RegisterContent() {
         setValidationError("กรุณาระบุความสัมพันธ์กับผู้ติดต่อฉุกเฉิน");
         return false;
       }
-      if (!medical.emergencyContactPhone || medical.emergencyContactPhone.length < 9) {
-        setValidationError("กรุณากรอกเบอร์โทรศัพท์ผู้ติดต่อฉุกเฉิน");
+      if (!isPhone(medical.emergencyContactPhone)) {
+        setValidationError("กรุณากรอกเบอร์โทรศัพท์ผู้ติดต่อฉุกเฉินให้ถูกต้อง (ตัวเลข 9–10 หลัก ขึ้นต้นด้วย 0)");
         return false;
       }
       return true;
@@ -258,8 +272,16 @@ function RegisterContent() {
           setValidationError("กรุณาระบุชื่อผู้รับพัสดุสำหรับจัดส่ง Race Kit");
           return false;
         }
-        if (!delivery.address?.trim() || !delivery.postalCode?.trim()) {
-          setValidationError("กรุณากรอกที่อยู่และรหัสไปรษณีย์สำหรับจัดส่งให้ครบถ้วน");
+        if (!isPhone(delivery.phone || "")) {
+          setValidationError("กรุณากรอกเบอร์โทรศัพท์ผู้รับพัสดุให้ถูกต้อง");
+          return false;
+        }
+        if (!delivery.address?.trim() || !delivery.subdistrict?.trim() || !delivery.district?.trim() || !delivery.province?.trim()) {
+          setValidationError("กรุณากรอกที่อยู่จัดส่งให้ครบถ้วน (บ้านเลขที่ ตำบล อำเภอ จังหวัด)");
+          return false;
+        }
+        if (!/^\d{5}$/.test(delivery.postalCode || "")) {
+          setValidationError("รหัสไปรษณีย์ต้องเป็นตัวเลข 5 หลัก");
           return false;
         }
       }
@@ -314,13 +336,14 @@ function RegisterContent() {
         },
         consents,
         amount: totalAmount,
-        paymentMethod,
+        paymentMethod: "promptpay",
         paymentStatus: "verified",
         status: "confirmed",
-        slipUrl: slipUploaded ? "/mock-slip.jpg" : undefined,
+        slipUrl: slipName ? "/mock-slip.jpg" : undefined,
       });
 
       setIsProcessingPayment(false);
+      sessionStorage.setItem(SUCCESS_KEY, newOrder.registrationCode);
       setSuccessOrder(newOrder);
       setStep(7); // Success Screen
       confetti({
@@ -436,6 +459,7 @@ function RegisterContent() {
 
                   <ImageSlot
                     ratio="16:9"
+                    source={selectedCategory.imageUrl}
                     label={selectedCategory.imageLabel}
                     sublabel="พื้นที่กิจกรรมที่เลือก"
                     className="rounded-[18px]"
@@ -479,14 +503,17 @@ function RegisterContent() {
                       </p>
                     </div>
 
-                    <div className="space-y-4">
+                    <div role="radiogroup" aria-label="ระยะกิจกรรม" className="space-y-4">
                       {categories.map((cat) => {
                         const isSelected = selectedCategoryId === cat.id;
                         return (
-                          <div
+                          <button
+                            type="button"
+                            role="radio"
+                            aria-checked={isSelected}
                             key={cat.id}
                             onClick={() => setSelectedCategoryId(cat.id)}
-                            className={`p-5 rounded-[20px] border transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${
+                            className={`w-full text-left p-5 rounded-[20px] border transition-all cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent-orange ${
                               isSelected
                                 ? "border-accent-orange bg-soft-olive/20 ring-2 ring-accent-orange/20"
                                 : "border-border-subtle bg-canvas-cream/50 hover:bg-canvas-cream"
@@ -522,7 +549,7 @@ function RegisterContent() {
                               <span className="text-xl font-bold text-ink-dark">฿{cat.price}</span>
                               <span className="text-xs text-muted-green block">/คน</span>
                             </div>
-                          </div>
+                          </button>
                         );
                       })}
                     </div>
@@ -658,6 +685,8 @@ function RegisterContent() {
                               </label>
                               <input
                                 type="tel"
+                                inputMode="numeric"
+                                autoComplete="tel"
                                 value={p.phone}
                                 onChange={(e) => updateParticipant(index, "phone", e.target.value)}
                                 placeholder="08XXXXXXXX"
@@ -697,6 +726,8 @@ function RegisterContent() {
                               </label>
                               <input
                                 type="text"
+                                inputMode="numeric"
+                                pattern="\d{4}"
                                 maxLength={4}
                                 value={p.idCardLast4}
                                 onChange={(e) => updateParticipant(index, "idCardLast4", e.target.value)}
@@ -709,7 +740,10 @@ function RegisterContent() {
                       ))}
 
                       {/* Add Family Member Button */}
-                      {(regType === "family" || regType === "group") && (
+                      {(regType === "family" || regType === "group") && participants.length >= 6 && (
+                        <p className="text-xs text-muted-green text-center">รับสมัครสูงสุด 6 คนต่อหนึ่งรายการ</p>
+                      )}
+                      {(regType === "family" || regType === "group") && participants.length < 6 && (
                         <button
                           type="button"
                           onClick={addParticipant}
@@ -855,6 +889,7 @@ function RegisterContent() {
                           </label>
                           <input
                             type="tel"
+                            inputMode="numeric"
                             placeholder="08XXXXXXXX"
                             value={medical.emergencyContactPhone}
                             onChange={(e) => setMedical({ ...medical, emergencyContactPhone: e.target.value })}
@@ -868,6 +903,7 @@ function RegisterContent() {
                           </label>
                           <input
                             type="tel"
+                            inputMode="numeric"
                             placeholder="02XXXXXXX หรือเบอร์ญาติ"
                             value={medical.emergencyContactAltPhone}
                             onChange={(e) => setMedical({ ...medical, emergencyContactAltPhone: e.target.value })}
@@ -937,17 +973,20 @@ function RegisterContent() {
                         วิธีรับ Race Kit (เบอร์วิ่งและเสื้อ)
                       </h3>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div role="radiogroup" aria-label="วิธีรับ Race Kit" className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {[
-                          { id: "self", title: "รับด้วยตนเองวันงาน", desc: "ณ จุดลงทะเบียน 05:00 น. วันที่ 8 พ.ย.", fee: 0 },
-                          { id: "early", title: "รับล่วงหน้า 1 วัน", desc: "ณ ลานชุมชนวังหมี วันที่ 7 พ.ย. 13:00-18:00 น.", fee: 0 },
+                          { id: "self", title: "รับด้วยตนเองวันงาน", desc: "ณ จุดลงทะเบียน เปิด 05:00 น. เช้าวันงาน", fee: 0 },
+                          { id: "early", title: "รับล่วงหน้า 1 วัน", desc: "ณ ลานชุมชนวังหมี ก่อนวันงาน 1 วัน 13:00–18:00 น.", fee: 0 },
                           { id: "delivery", title: "จัดส่งทางพัสดุไปรษณีย์", desc: "ส่งถึงบ้านก่อนวันงาน 10 วัน (+60 บาท)", fee: 60 },
                           { id: "proxy", title: "มอบอำนาจผู้อื่นรับแทน", desc: "นำสำเนาและ QR E-Ticket มารับแทน", fee: 0 },
                         ].map((m) => (
-                          <div
+                          <button
+                            type="button"
+                            role="radio"
+                            aria-checked={delivery.method === m.id}
                             key={m.id}
                             onClick={() => setDelivery({ ...delivery, method: m.id as DeliveryMethod, deliveryFee: m.fee })}
-                            className={`p-4 rounded-[16px] border cursor-pointer transition-all ${
+                            className={`w-full text-left p-4 rounded-[16px] border cursor-pointer transition-all focus:outline-hidden focus-visible:ring-2 focus-visible:ring-accent-orange ${
                               delivery.method === m.id
                                 ? "border-accent-orange bg-soft-olive/20 ring-1 ring-accent-orange"
                                 : "border-border-subtle bg-canvas-cream hover:bg-soft-olive/40"
@@ -960,7 +999,7 @@ function RegisterContent() {
                               </span>
                             </div>
                             <p className="text-xs text-muted-green">{m.desc}</p>
-                          </div>
+                          </button>
                         ))}
                       </div>
 
@@ -978,6 +1017,7 @@ function RegisterContent() {
                             />
                             <input
                               type="tel"
+                              inputMode="numeric"
                               placeholder="เบอร์โทรศัพท์ผู้รับ *"
                               value={delivery.phone}
                               onChange={(e) => setDelivery({ ...delivery, phone: e.target.value })}
@@ -1013,6 +1053,8 @@ function RegisterContent() {
                             />
                             <input
                               type="text"
+                              inputMode="numeric"
+                              maxLength={5}
                               placeholder="รหัสไปรษณีย์ *"
                               value={delivery.postalCode}
                               onChange={(e) => setDelivery({ ...delivery, postalCode: e.target.value })}
@@ -1146,41 +1188,12 @@ function RegisterContent() {
                     <div>
                       <h2 className="text-xl font-bold text-ink-dark mb-1">ชำระเงินและยืนยันสิทธิ์</h2>
                       <p className="text-sm text-muted-green">
-                        สแกนชำระผ่าน PromptPay QR หรือชำระด้วยบัตรเครดิต ยอดรวมทั้งสิ้น ฿{totalAmount}
+                        สแกนชำระผ่าน PromptPay QR ยอดรวมทั้งสิ้น ฿{totalAmount}
                       </p>
                     </div>
 
-                    {/* Payment Method Tabs */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("promptpay")}
-                        className={`p-3.5 rounded-[16px] border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                          paymentMethod === "promptpay"
-                            ? "bg-ink-dark text-white border-ink-dark"
-                            : "bg-canvas-cream text-ink-dark border-border-subtle"
-                        }`}
-                      >
-                        <IconQrcode size={18} />
-                        <span>PromptPay QR</span>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setPaymentMethod("credit_card")}
-                        className={`p-3.5 rounded-[16px] border text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-                          paymentMethod === "credit_card"
-                            ? "bg-ink-dark text-white border-ink-dark"
-                            : "bg-canvas-cream text-ink-dark border-border-subtle"
-                        }`}
-                      >
-                        <IconCreditCard size={18} />
-                        <span>บัตรเครดิต / เดบิต</span>
-                      </button>
-                    </div>
-
-                    {/* PromptPay QR Interface */}
-                    {paymentMethod === "promptpay" ? (
-                      <div className="p-6 rounded-[24px] bg-canvas-cream border border-border-subtle flex flex-col items-center text-center space-y-4">
+                    {/* ponytail: PromptPay only — card tab removed until a payment gateway exists */}
+                    <div className="p-6 rounded-[24px] bg-canvas-cream border border-border-subtle flex flex-col items-center text-center space-y-4">
                         <span className="text-xs font-semibold text-muted-green uppercase tracking-wider">
                           Thai QR Payment / พร้อมเพย์
                         </span>
@@ -1201,52 +1214,25 @@ function RegisterContent() {
                           </span>
                         </div>
 
-                        {/* Slip Upload Simulator */}
+                        {/* ponytail: file stays in the browser; wire to Supabase Storage when the backend lands */}
                         <div className="w-full max-w-sm pt-2">
-                          <button
-                            type="button"
-                            onClick={() => setSlipUploaded(true)}
-                            className={`w-full py-2.5 px-4 rounded-[14px] text-xs font-semibold border transition-all ${
-                              slipUploaded
+                          <label
+                            className={`block w-full py-2.5 px-4 rounded-[14px] text-xs font-semibold border cursor-pointer transition-all ${
+                              slipName
                                 ? "bg-status-success/15 border-status-success text-status-success"
                                 : "bg-white border-border-subtle text-ink-dark hover:bg-soft-olive"
                             }`}
                           >
-                            {slipUploaded ? "✓ แนบสลิปชำระเงินเรียบร้อยแล้ว" : "จำลองแนบสลิปโอนเงิน (Optional)"}
-                          </button>
+                            <input
+                              type="file"
+                              accept="image/*,.pdf"
+                              className="sr-only"
+                              onChange={(e) => setSlipName(e.target.files?.[0]?.name ?? "")}
+                            />
+                            {slipName ? `✓ แนบสลิปแล้ว: ${slipName}` : "แนบสลิปโอนเงิน (ไม่บังคับ)"}
+                          </label>
                         </div>
                       </div>
-                    ) : (
-                      /* Credit Card Form */
-                      <div className="p-6 rounded-[24px] bg-canvas-cream border border-border-subtle space-y-3.5 text-xs">
-                        <div>
-                          <label className="text-xs font-medium text-ink-dark block mb-1">หมายเลขบัตรเครดิต</label>
-                          <input
-                            type="text"
-                            placeholder="4111 2222 3333 4444"
-                            className="w-full px-3.5 py-2.5 rounded-[12px] bg-white border border-border-subtle text-sm"
-                          />
-                        </div>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div>
-                            <label className="text-xs font-medium text-ink-dark block mb-1">วันหมดอายุ (MM/YY)</label>
-                            <input
-                              type="text"
-                              placeholder="12/28"
-                              className="w-full px-3.5 py-2.5 rounded-[12px] bg-white border border-border-subtle text-sm"
-                            />
-                          </div>
-                          <div>
-                            <label className="text-xs font-medium text-ink-dark block mb-1">CVV / CVC</label>
-                            <input
-                              type="text"
-                              placeholder="123"
-                              className="w-full px-3.5 py-2.5 rounded-[12px] bg-white border border-border-subtle text-sm"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    )}
 
                     {/* Confirm Button */}
                     <button
@@ -1368,13 +1354,23 @@ function RegisterContent() {
                     <IconPrinter size={16} />
                     <span>พิมพ์ใบยืนยัน / E-Ticket</span>
                   </button>
-                  <a
+                  <Link
                     href={`/registration/status?code=${successOrder.registrationCode}`}
                     className="px-6 py-2.5 rounded-[14px] bg-ink-dark text-white text-xs font-semibold hover:bg-ink-dark/90 flex items-center gap-1.5"
                   >
                     <span>ไปยัง Participant Dashboard</span>
                     <IconArrowRight size={14} />
-                  </a>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      sessionStorage.removeItem(SUCCESS_KEY);
+                      window.location.href = "/register";
+                    }}
+                    className="px-5 py-2.5 rounded-[14px] text-xs font-semibold text-muted-green hover:text-ink-dark hover:underline"
+                  >
+                    สมัครรายการใหม่
+                  </button>
                 </div>
               </div>
             </div>
@@ -1384,12 +1380,22 @@ function RegisterContent() {
 
       {/* SIZE CHART MODAL */}
       {showSizeModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4">
-          <div className="bg-surface-white rounded-[24px] border border-border-subtle p-6 max-w-md w-full shadow-lg space-y-4">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4"
+          onClick={(e) => e.target === e.currentTarget && setShowSizeModal(false)}
+          onKeyDown={(e) => e.key === "Escape" && setShowSizeModal(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="size-chart-title"
+            className="bg-surface-white rounded-[24px] border border-border-subtle p-6 max-w-md w-full shadow-lg space-y-4"
+          >
             <div className="flex items-center justify-between pb-2 border-b border-border-subtle">
-              <h3 className="text-base font-bold text-ink-dark">ตารางขนาดเสื้อที่ระลึก (นิ้ว)</h3>
+              <h3 id="size-chart-title" className="text-base font-bold text-ink-dark">ตารางขนาดเสื้อที่ระลึก (นิ้ว)</h3>
               <button
                 type="button"
+                autoFocus
                 onClick={() => setShowSizeModal(false)}
                 className="text-muted-green hover:text-ink-dark text-sm font-bold"
               >

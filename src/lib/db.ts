@@ -86,7 +86,7 @@ export const INITIAL_REGISTRATIONS: RegistrationOrder[] = [
     registrationCode: 'RLL-2026-8801',
     bibNumber: 'A-3012',
     categoryId: 'mini-trail',
-    categoryName: 'Mini Trail (12 กม.)',
+    categoryName: 'Mini Trail (14 กม.)',
     regType: 'single',
     participants: [
       {

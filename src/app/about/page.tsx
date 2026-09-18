@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ImageSlot } from "@/components/ui/ImageSlot";
@@ -69,13 +70,13 @@ export default function AboutPage() {
           <p className="text-sm text-muted-green max-w-md mx-auto">
             ทุกการก้าววิ่งของท่าน คือแรงสนับสนุนที่ส่งตรงถึงชุมชนและเจ้าหน้าที่ผู้เสียสละ
           </p>
-          <a
+          <Link
             href="/register"
             className="inline-flex items-center gap-2 px-8 py-3.5 rounded-[14px] bg-accent-orange text-white text-sm font-semibold hover:bg-accent-orange/90 shadow-xs"
           >
             <span>สมัครร่วมกิจกรรมเลย</span>
             <IconArrowRight size={16} />
-          </a>
+          </Link>
         </div>
       </main>
 

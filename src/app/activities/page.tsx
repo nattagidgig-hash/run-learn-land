@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { INITIAL_CATEGORIES } from "@/lib/db";
@@ -115,13 +116,13 @@ export default function ActivitiesPage() {
                     <span className="text-2xl font-bold text-ink-dark">฿{cat.price}</span>
                     <span className="text-xs text-muted-green ml-1">/ ท่าน</span>
                   </div>
-                  <a
+                  <Link
                     href={`/register?category=${cat.id}`}
                     className="px-6 py-3 rounded-[14px] bg-accent-orange hover:bg-accent-orange/90 text-white text-sm font-semibold flex items-center gap-2 shadow-xs transition-transform active:scale-95"
                   >
                     <span>สมัครระยะนี้</span>
                     <IconArrowRight size={16} />
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

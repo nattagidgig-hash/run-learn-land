@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useSyncExternalStore } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { db } from "@/lib/db";
@@ -21,8 +21,99 @@ import {
   IconCircleCheck
 } from "@tabler/icons-react";
 
+const STATUS_LABEL: Record<string, string> = {
+  draft: "ฉบับร่าง",
+  pending_payment: "รอชำระเงิน",
+  confirmed: "ยืนยันสิทธิ์แล้ว",
+  kit_ready: "เตรียม Kit แล้ว",
+  checked_in: "เช็กอินแล้ว",
+  finished: "เข้าเส้นชัยแล้ว",
+};
+
+// ponytail: client-side PIN gate over localStorage data; swap for Supabase auth + RLS when the real backend lands
+const ADMIN_PIN = process.env.NEXT_PUBLIC_ADMIN_PIN;
+
+const noopSubscribe = () => () => {};
+
+function AdminGate({ children }: { children: React.ReactNode }) {
+  const stored = useSyncExternalStore(
+    noopSubscribe,
+    () => sessionStorage.getItem("rll_admin") === "1",
+    () => false
+  );
+  const [unlocked, setUnlocked] = useState(false);
+  const [pin, setPin] = useState("");
+  const [error, setError] = useState(false);
+
+  if (stored || unlocked) return <>{children}</>;
+
+  return (
+    <div className="min-h-screen flex flex-col bg-canvas-cream text-ink-dark">
+      <Navbar />
+      <main className="flex-1 flex items-center justify-center px-4 py-12">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (ADMIN_PIN && pin === ADMIN_PIN) {
+              sessionStorage.setItem("rll_admin", "1");
+              setUnlocked(true);
+            } else {
+              setError(true);
+            }
+          }}
+          className="w-full max-w-sm rounded-[24px] bg-surface-white border border-border-subtle p-6 sm:p-8 shadow-xs space-y-4"
+        >
+          <div className="w-12 h-12 rounded-full bg-soft-olive text-ink-dark flex items-center justify-center mx-auto">
+            <IconShieldCheck size={24} stroke={1.8} />
+          </div>
+          <div className="text-center">
+            <h1 className="text-lg font-bold">ระบบเจ้าหน้าที่</h1>
+            <p className="text-xs text-muted-green mt-1">กรอกรหัสผ่านเจ้าหน้าที่เพื่อเข้าใช้งาน</p>
+          </div>
+          <label className="block">
+            <span className="sr-only">รหัสผ่านเจ้าหน้าที่</span>
+            <input
+              type="password"
+              inputMode="numeric"
+              autoComplete="current-password"
+              value={pin}
+              onChange={(e) => {
+                setPin(e.target.value);
+                setError(false);
+              }}
+              placeholder="รหัสผ่าน"
+              className="w-full px-4 py-3 rounded-[14px] bg-canvas-cream border border-border-subtle text-center text-base font-mono focus:outline-hidden focus:ring-2 focus:ring-accent-orange"
+            />
+          </label>
+          {error && (
+            <p role="alert" className="text-xs text-status-error text-center">
+              {ADMIN_PIN ? "รหัสผ่านไม่ถูกต้อง" : "ยังไม่ได้ตั้งค่า NEXT_PUBLIC_ADMIN_PIN"}
+            </p>
+          )}
+          <button
+            type="submit"
+            className="w-full py-3 rounded-[14px] bg-ink-dark hover:bg-ink-dark/90 text-white font-bold text-sm"
+          >
+            เข้าสู่ระบบ
+          </button>
+        </form>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
 export default function AdminPage() {
+  return (
+    <AdminGate>
+      <AdminContent />
+    </AdminGate>
+  );
+}
+
+function AdminContent() {
   const [activeTab, setActiveTab] = useState<"overview" | "registrations" | "checkin" | "media">("overview");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   // State
   const [stats, setStats] = useState(db.getAdminStats());
@@ -161,6 +252,7 @@ export default function AdminPage() {
               type="button"
               onClick={loadData}
               className="p-2 rounded-[14px] bg-white border border-border-subtle text-ink-dark hover:bg-soft-olive"
+              aria-label="รีเฟรชข้อมูล"
               title="รีเฟรชข้อมูล"
             >
               <IconRefresh size={16} />
@@ -301,7 +393,7 @@ export default function AdminPage() {
                   <option value="all">ทุกประเภทกิจกรรม</option>
                   <option value="nature-walk">Nature Walk 3 กม.</option>
                   <option value="family-run">Family Run 4.2 กม.</option>
-                  <option value="mini-trail">Mini Trail 12 กม.</option>
+                  <option value="mini-trail">Mini Trail 14 กม.</option>
                 </select>
 
                 <select
@@ -335,7 +427,8 @@ export default function AdminPage() {
                   <tbody className="divide-y divide-border-subtle">
                     {filtered.length > 0 ? (
                       filtered.map((r) => (
-                        <tr key={r.id} className="hover:bg-soft-olive/20 transition-colors">
+                        <React.Fragment key={r.id}>
+                        <tr className="hover:bg-soft-olive/20 transition-colors">
                           <td className="p-4">
                             <span className="font-mono font-bold text-ink-dark block">{r.registrationCode}</span>
                             <span className="font-mono text-accent-orange font-bold text-xs">{r.bibNumber}</span>
@@ -374,7 +467,7 @@ export default function AdminPage() {
                                   : "bg-status-warning/20 text-status-warning"
                               }`}
                             >
-                              {r.status}
+                              {STATUS_LABEL[r.status] ?? r.status}
                             </span>
                           </td>
                           <td className="p-4 text-right space-x-1">
@@ -389,15 +482,43 @@ export default function AdminPage() {
                             )}
                             <button
                               type="button"
-                              onClick={() =>
-                                alert(`ข้อมูลผู้สมัคร:\n${JSON.stringify(r.participants, null, 2)}`)
-                              }
+                              aria-expanded={expandedId === r.id}
+                              onClick={() => setExpandedId(expandedId === r.id ? null : r.id)}
                               className="px-2.5 py-1 rounded-[10px] bg-canvas-cream border border-border-subtle text-[11px] font-medium text-ink-dark hover:bg-soft-olive"
                             >
-                              ดู
+                              {expandedId === r.id ? "ซ่อน" : "ดู"}
                             </button>
                           </td>
                         </tr>
+                        {expandedId === r.id && (
+                          <tr className="bg-canvas-cream/60">
+                            <td colSpan={7} className="p-4">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                {r.participants.map((p, i) => (
+                                  <div key={p.id} className="p-3 rounded-[14px] bg-white border border-border-subtle space-y-0.5">
+                                    <div className="font-bold text-ink-dark">{i + 1}. {p.fullNameTh}</div>
+                                    <div className="text-muted-green">{p.fullNameEn || "-"} • Bib: <span className="font-mono text-ink-dark">{p.bibName}</span></div>
+                                    <div className="text-muted-green">เกิด {p.birthDate} • ไซส์ {p.shirtSize} • บัตร xxxx{p.idCardLast4 || "----"}</div>
+                                    <div className="text-muted-green">โทร {p.phone} • {p.email || "-"} • {p.province}</div>
+                                  </div>
+                                ))}
+                                <div className="p-3 rounded-[14px] bg-white border border-border-subtle space-y-0.5 sm:col-span-2 lg:col-span-3">
+                                  <div className="font-bold text-ink-dark">ผู้ติดต่อฉุกเฉิน</div>
+                                  <div className="text-muted-green">
+                                    {r.medical.emergencyContactName} ({r.medical.emergencyContactRelation}) • {r.medical.emergencyContactPhone}
+                                    {r.medical.emergencyContactAltPhone ? ` / ${r.medical.emergencyContactAltPhone}` : ""}
+                                  </div>
+                                  {(r.medical.chronicDiseaseDetail || r.medical.allergyDetail || r.medical.physicalLimitationDetail) && (
+                                    <div className="text-status-error">
+                                      {[r.medical.chronicDiseaseDetail, r.medical.allergyDetail, r.medical.physicalLimitationDetail].filter(Boolean).join(" • ")}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                        </React.Fragment>
                       ))
                     ) : (
                       <tr>
@@ -531,7 +652,7 @@ export default function AdminPage() {
                   <span className="text-xs font-bold text-ink-dark">Content Card 2 (สัดส่วน 4:5)</span>
                   <div className="aspect-[4/5] rounded-[18px] bg-canvas-cream border border-border-subtle flex flex-col items-center justify-center p-4 text-center">
                     <IconPhoto size={24} className="text-muted-green mb-1" />
-                    <span className="text-xs font-semibold text-ink-dark">สันเขามินิเทรล 12 กม.</span>
+                    <span className="text-xs font-semibold text-ink-dark">สันเขามินิเทรล 14 กม.</span>
                     <button
                       type="button"
                       onClick={() => alert("ระบบพร้อมเชื่อมต่อ Supabase Storage Bucket 'public-media'")}

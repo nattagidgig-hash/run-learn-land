@@ -44,7 +44,7 @@ export default function RoutePage() {
 
             <ImageSlot
               ratio="16:9"
-              label="แผนที่เส้นทาง Nature Walk, Family Run และ Mini Trail 12K"
+              label="แผนที่เส้นทาง Nature Walk, Family Run และ Mini Trail 14K"
               sublabel="สัดส่วน 16:9 • แสดงเส้นทาง จุดพยาบาล จุดให้น้ำ และเส้นทางหนีภัย"
             />
           </div>
@@ -86,10 +86,10 @@ export default function RoutePage() {
 
           <div className="rounded-[24px] bg-surface-white border border-border-subtle p-6 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-soft-olive text-ink-dark">12 กม.</span>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-soft-olive text-ink-dark">14 กม.</span>
               <span className="text-xs font-bold text-accent-orange">ความชัน +320m</span>
             </div>
-            <h3 className="text-lg font-bold text-ink-dark">Mini Trail 12K</h3>
+            <h3 className="text-lg font-bold text-ink-dark">Mini Trail 14K</h3>
             <p className="text-xs text-muted-green leading-relaxed">
               เส้นทางเทรลธรรมชาติ สันเขาหิน ป่าไผ่ และทางลาดชัน สัมผัสทิวทัศน์ 360 องศา เทือกเขาดงพญาเย็น–เขาใหญ่
             </p>

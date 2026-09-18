@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import {
   IconPhoneCall,
   IconMapPin,
@@ -61,14 +62,14 @@ export const Footer: React.FC = () => {
               เมนูหลัก
             </h4>
             <div className="grid grid-cols-2 gap-2 text-sm text-soft-olive/80">
-              <a href="/activities" className="hover:text-white transition-colors">ระยะกิจกรรม</a>
-              <a href="/route" className="hover:text-white transition-colors">แผนที่เส้นทาง</a>
-              <a href="/schedule" className="hover:text-white transition-colors">กำหนดการ</a>
-              <a href="/rules" className="hover:text-white transition-colors">กฎและกติกา</a>
-              <a href="/faq" className="hover:text-white transition-colors">คำถามที่พบบ่อย</a>
-              <a href="/registration/status" className="hover:text-white transition-colors">เช็กสถานะบิบ</a>
-              <a href="/about" className="hover:text-white transition-colors">เกี่ยวกับโครงการ</a>
-              <a href="/admin" className="hover:text-white transition-colors text-olive-highlight">ระบบเจ้าหน้าที่</a>
+              <Link href="/activities" className="hover:text-white transition-colors">ระยะกิจกรรม</Link>
+              <Link href="/route" className="hover:text-white transition-colors">แผนที่เส้นทาง</Link>
+              <Link href="/schedule" className="hover:text-white transition-colors">กำหนดการ</Link>
+              <Link href="/rules" className="hover:text-white transition-colors">กฎและกติกา</Link>
+              <Link href="/faq" className="hover:text-white transition-colors">คำถามที่พบบ่อย</Link>
+              <Link href="/registration/status" className="hover:text-white transition-colors">เช็กสถานะบิบ</Link>
+              <Link href="/about" className="hover:text-white transition-colors">เกี่ยวกับโครงการ</Link>
+              <Link href="/admin" className="hover:text-white transition-colors text-olive-highlight">ระบบเจ้าหน้าที่</Link>
             </div>
           </div>
 
@@ -80,14 +81,14 @@ export const Footer: React.FC = () => {
             <div className="p-4 rounded-[18px] bg-white/5 border border-white/10 space-y-2">
               <div className="flex items-center gap-2 text-sm text-white font-medium">
                 <IconPhoneCall size={16} className="text-accent-orange" />
-                <span>ศูนย์ประสานงานจัดงาน: 044-999-888</span>
+                <span>ศูนย์ประสานงานจัดงาน: <a href="tel:044999888" className="hover:underline">044-999-888</a></span>
               </div>
               <div className="text-xs text-soft-olive/70 leading-relaxed">
                 ติดต่อสอบถามรายละเอียดการสมัคร การรับ Race Kit และแจ้งเหตุฉุกเฉิน
               </div>
             </div>
             <div className="text-xs text-soft-olive/60 pt-1">
-              Email: contact@runlearnland-wangmee.org
+              Email: <a href="mailto:contact@runlearnland-wangmee.org" className="hover:text-soft-olive">contact@runlearnland-wangmee.org</a>
             </div>
           </div>
         </div>
@@ -96,8 +97,8 @@ export const Footer: React.FC = () => {
         <div className="mt-12 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-soft-olive/60 gap-4">
           <p>© 2026 วังหมีกระทิง RUN LEARN LAND. สงวนลิขสิทธิ์ทุกประการ.</p>
           <div className="flex items-center gap-6">
-            <a href="/rules" className="hover:text-soft-olive">นโยบายความเป็นส่วนตัว (PDPA)</a>
-            <a href="/rules" className="hover:text-soft-olive">เงื่อนไขการเข้าร่วมกิจกรรม</a>
+            <Link href="/rules" className="hover:text-soft-olive">นโยบายความเป็นส่วนตัว (PDPA)</Link>
+            <Link href="/rules" className="hover:text-soft-olive">เงื่อนไขการเข้าร่วมกิจกรรม</Link>
           </div>
         </div>
       </div>

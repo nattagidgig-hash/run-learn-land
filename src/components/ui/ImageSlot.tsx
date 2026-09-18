@@ -79,6 +79,7 @@ export const ImageSlot: React.FC<ImageSlotProps> = ({
           type="button"
           onClick={onEdit}
           className="absolute top-3 right-3 z-20 p-2 rounded-full bg-white/90 border border-border-subtle text-ink-dark hover:bg-white shadow-xs transition-colors"
+          aria-label="แก้ไขรูปภาพ"
           title="แก้ไขรูปภาพ"
         >
           <IconPencil size={16} stroke={1.8} />

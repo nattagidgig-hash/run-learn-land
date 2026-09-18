@@ -4,7 +4,7 @@
   --color-canvas-cream: #F7F3EA;
   --color-surface-white: #FFFFFF;
   --color-ink-dark: #14251B;
-  --color-muted-green: #667161;
+  --color-muted-green: #5B6656; /* ≥5:1 on cream & white for the 10–12px text used everywhere */
   --color-accent-orange: #D96D2B;
   --color-olive-highlight: #B5BE62;
   --color-soft-olive: #EEF0D9;

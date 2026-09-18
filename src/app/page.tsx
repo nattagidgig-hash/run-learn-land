@@ -1,6 +1,5 @@
-"use client";
-
-import React, { useState } from "react";
+import React from "react";
+import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ImageSlot } from "@/components/ui/ImageSlot";
@@ -22,9 +21,14 @@ import {
   IconSparkles
 } from "@tabler/icons-react";
 
+const FUND_GOAL = 500000;
+
 export default function HomePage() {
   const categories = INITIAL_CATEGORIES;
-  const [selectedCategory, setSelectedCategory] = useState<string>("family-run");
+  const totalQuota = categories.reduce((s, c) => s + c.quota, 0);
+  const registered = categories.reduce((s, c) => s + (c.quota - c.remaining), 0);
+  const raised = categories.reduce((s, c) => s + (c.quota - c.remaining) * c.price, 0);
+  const raisedPct = Math.min(100, Math.round((raised / FUND_GOAL) * 1000) / 10);
 
   return (
     <div className="min-h-screen flex flex-col bg-canvas-cream text-ink-dark">
@@ -38,7 +42,7 @@ export default function HomePage() {
             <div className="flex justify-center mb-6">
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-soft-olive border border-border-subtle text-xs sm:text-sm font-medium text-ink-dark">
                 <span className="w-2 h-2 rounded-full bg-accent-orange animate-pulse" />
-                <span>เปิดรับสมัครอย่างเป็นทางการ • โควตารวม 1,200 ที่นั่งเท่านั้น</span>
+                <span>เปิดรับสมัครอย่างเป็นทางการ • โควตารวม {totalQuota.toLocaleString()} ที่นั่งเท่านั้น</span>
               </div>
             </div>
 
@@ -99,13 +103,13 @@ export default function HomePage() {
 
             {/* Quick Action Button */}
             <div className="mt-8 text-center">
-              <a
+              <Link
                 href="/register"
                 className="inline-flex items-center gap-2.5 px-8 py-4 rounded-[16px] bg-ink-dark hover:bg-ink-dark/90 text-surface-white text-base font-semibold shadow-xs transition-transform active:scale-95"
               >
                 <span>เลือกกิจกรรมและสมัครทันที</span>
                 <IconArrowRight size={18} stroke={2} />
-              </a>
+              </Link>
             </div>
           </div>
         </section>
@@ -124,19 +128,26 @@ export default function HomePage() {
                   </h3>
                 </div>
                 <div className="text-left sm:text-right">
-                  <span className="text-2xl sm:text-3xl font-bold text-ink-dark">268,500</span>
-                  <span className="text-sm text-muted-green ml-1">/ 500,000 บาท</span>
+                  <span className="text-2xl sm:text-3xl font-bold text-ink-dark">{raised.toLocaleString()}</span>
+                  <span className="text-sm text-muted-green ml-1">/ {FUND_GOAL.toLocaleString()} บาท</span>
                 </div>
               </div>
 
               {/* Progress Bar */}
-              <div className="w-full h-3.5 bg-canvas-cream rounded-full overflow-hidden border border-border-subtle mb-3">
-                <div className="h-full bg-accent-orange rounded-full transition-all duration-1000" style={{ width: '53.7%' }} />
+              <div
+                role="progressbar"
+                aria-valuenow={raisedPct}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-label="ความคืบหน้าระดมทุน"
+                className="w-full h-3.5 bg-canvas-cream rounded-full overflow-hidden border border-border-subtle mb-3"
+              >
+                <div className="h-full bg-accent-orange rounded-full transition-all duration-1000" style={{ width: `${raisedPct}%` }} />
               </div>
 
               <div className="flex items-center justify-between text-xs text-muted-green font-medium">
-                <span>ยอดปัจจุบัน 53.7%</span>
-                <span>ผู้สมัครแล้ว 437 คนจาก 1,200 สิทธิ์</span>
+                <span>ยอดปัจจุบัน {raisedPct}%</span>
+                <span>ผู้สมัครแล้ว {registered.toLocaleString()} คนจาก {totalQuota.toLocaleString()} สิทธิ์</span>
               </div>
             </div>
           </div>
@@ -160,16 +171,10 @@ export default function HomePage() {
             {/* Cards (Desktop 3 cols, Mobile vertical per Spec) */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
               {categories.map((cat) => {
-                const isSelected = selectedCategory === cat.id;
                 return (
                   <div
                     key={cat.id}
-                    onClick={() => setSelectedCategory(cat.id)}
-                    className={`rounded-[24px] bg-surface-white border p-6 sm:p-7 flex flex-col justify-between transition-all cursor-pointer relative ${
-                      isSelected
-                        ? "border-accent-orange ring-2 ring-accent-orange/20 shadow-xs"
-                        : "border-border-subtle hover:border-muted-green/60"
-                    }`}
+                    className="rounded-[24px] bg-surface-white border border-border-subtle hover:border-muted-green/60 p-6 sm:p-7 flex flex-col justify-between transition-all relative"
                   >
                     {/* Package Artwork Image */}
                     {cat.imageUrl && (
@@ -245,17 +250,13 @@ export default function HomePage() {
 
                     {/* Action Button */}
                     <div className="pt-2">
-                      <a
+                      <Link
                         href={`/register?category=${cat.id}`}
-                        className={`w-full py-3 rounded-[14px] text-sm font-semibold flex items-center justify-center gap-2 transition-colors ${
-                          isSelected
-                            ? "bg-accent-orange text-surface-white hover:bg-accent-orange/90"
-                            : "bg-canvas-cream text-ink-dark hover:bg-soft-olive border border-border-subtle"
-                        }`}
+                        className="w-full py-3 rounded-[14px] text-sm font-semibold flex items-center justify-center gap-2 transition-colors bg-accent-orange text-surface-white hover:bg-accent-orange/90"
                       >
                         <span>เลือกกิจกรรมนี้</span>
                         <IconArrowRight size={16} />
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 );
@@ -281,7 +282,7 @@ export default function HomePage() {
 
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
               {[
-                { step: "01", title: "เลือกกิจกรรม", desc: "เลือก 3 กม., 4.2 กม. หรือ 12 กม.", icon: IconRoute },
+                { step: "01", title: "เลือกกิจกรรม", desc: "เลือก 3 กม., 4.2 กม. หรือ 14 กม.", icon: IconRoute },
                 { step: "02", title: "ข้อมูลผู้สมัคร", desc: "เดี่ยว ครอบครัว หรือกลุ่ม", icon: IconUserCheck },
                 { step: "03", title: "สุขภาพและฉุกเฉิน", desc: "ประวัติการแพ้และเบอร์ติดต่อ", icon: IconHeartbeat },
                 { step: "04", title: "เสื้อและ Race Kit", desc: "เลือกไซส์และวิธีรับบิบ", icon: IconShirt },
@@ -321,13 +322,13 @@ export default function HomePage() {
                   ทุกช่องภาพเชื่อมต่อกับระบบ Media Management หลังบ้าน ปรับเปลี่ยนได้โดยไม่ต้องแก้โค้ด
                 </p>
               </div>
-              <a
+              <Link
                 href="/route"
                 className="text-xs sm:text-sm font-semibold text-accent-orange hover:underline inline-flex items-center gap-1 self-start md:self-auto"
               >
                 <span>ดูรายละเอียดแผนที่เส้นทาง</span>
                 <IconArrowRight size={14} />
-              </a>
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

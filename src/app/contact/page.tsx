@@ -54,7 +54,10 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <span className="text-xs text-muted-green block">สายด่วนจัดงาน</span>
-                  <span className="font-bold text-ink-dark">044-999-888, 081-234-5678</span>
+                  <span className="font-bold text-ink-dark">
+                    <a href="tel:044999888" className="hover:underline">044-999-888</a>,{" "}
+                    <a href="tel:0812345678" className="hover:underline">081-234-5678</a>
+                  </span>
                   <span className="text-[11px] text-muted-green block">เปิดสายทุกวัน 08:00 - 18:00 น.</span>
                 </div>
               </div>
@@ -65,7 +68,9 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <span className="text-xs text-muted-green block">อีเมลประสานงาน</span>
-                  <span className="font-bold text-ink-dark">contact@runlearnland-wangmee.org</span>
+                  <a href="mailto:contact@runlearnland-wangmee.org" className="font-bold text-ink-dark hover:underline break-all">
+                    contact@runlearnland-wangmee.org
+                  </a>
                 </div>
               </div>
 
@@ -123,6 +128,9 @@ export default function ContactPage() {
                   <label className="text-xs font-medium text-ink-dark block mb-1">เบอร์โทรศัพท์ติดต่อ *</label>
                   <input
                     type="tel"
+                    inputMode="numeric"
+                    pattern="0[0-9]{8,9}"
+                    title="ตัวเลข 9–10 หลัก ขึ้นต้นด้วย 0"
                     required
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
